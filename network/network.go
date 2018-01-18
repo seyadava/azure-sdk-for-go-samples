@@ -12,7 +12,8 @@ import (
 
 	"github.com/Azure-Samples/azure-sdk-for-go-samples/helpers"
 	"github.com/Azure-Samples/azure-sdk-for-go-samples/iam"
-	"github.com/Azure/azure-sdk-for-go/services/network/mgmt/2017-09-01/network"
+	"github.com/Azure/azure-sdk-for-go/profiles/latest/network/mgmt/network"
+	//"github.com/Azure/azure-sdk-for-go/services/network/mgmt/2017-09-01/network"
 	"github.com/Azure/go-autorest/autorest"
 	"github.com/Azure/go-autorest/autorest/to"
 )
@@ -21,7 +22,7 @@ import (
 
 func getVnetClient() network.VirtualNetworksClient {
 	token, _ := iam.GetResourceManagementToken(iam.AuthGrantType())
-	vnetClient := network.NewVirtualNetworksClient(helpers.SubscriptionID())
+	vnetClient := network.NewVirtualNetworksClientWithBaseURI(helpers.ArmEndpointString(), helpers.SubscriptionID())
 	vnetClient.Authorizer = autorest.NewBearerAuthorizer(token)
 	vnetClient.AddToUserAgent(helpers.UserAgent())
 	return vnetClient
@@ -79,7 +80,7 @@ func DeleteVirtualNetwork(ctx context.Context, vnetName string) (result network.
 
 func getSubnetsClient() network.SubnetsClient {
 	token, _ := iam.GetResourceManagementToken(iam.AuthGrantType())
-	subnetsClient := network.NewSubnetsClient(helpers.SubscriptionID())
+	subnetsClient := network.NewSubnetsClientWithBaseURI(helpers.ArmEndpointString(), helpers.SubscriptionID())
 	subnetsClient.Authorizer = autorest.NewBearerAuthorizer(token)
 	subnetsClient.AddToUserAgent(helpers.UserAgent())
 	return subnetsClient
@@ -101,7 +102,7 @@ func GetVirtualNetworkSubnet(ctx context.Context, vnetName string, subnetName st
 
 func getNsgClient() network.SecurityGroupsClient {
 	token, _ := iam.GetResourceManagementToken(iam.AuthGrantType())
-	nsgClient := network.NewSecurityGroupsClient(helpers.SubscriptionID())
+	nsgClient := network.NewSecurityGroupsClientWithBaseURI(helpers.ArmEndpointString(), helpers.SubscriptionID())
 	nsgClient.Authorizer = autorest.NewBearerAuthorizer(token)
 	nsgClient.AddToUserAgent(helpers.UserAgent())
 	return nsgClient
@@ -185,7 +186,7 @@ func DeleteNetworkSecurityGroupRule() {}
 
 func getNicClient() network.InterfacesClient {
 	token, _ := iam.GetResourceManagementToken(iam.AuthGrantType())
-	nicClient := network.NewInterfacesClient(helpers.SubscriptionID())
+	nicClient := network.NewInterfacesClientWithBaseURI(helpers.ArmEndpointString(), helpers.SubscriptionID())
 	nicClient.Authorizer = autorest.NewBearerAuthorizer(token)
 	nicClient.AddToUserAgent(helpers.UserAgent())
 	return nicClient
@@ -260,7 +261,7 @@ func DeleteNic(ctx context.Context, nic string) (result network.InterfacesDelete
 
 func getIPClient() network.PublicIPAddressesClient {
 	token, _ := iam.GetResourceManagementToken(iam.AuthGrantType())
-	ipClient := network.NewPublicIPAddressesClient(helpers.SubscriptionID())
+	ipClient := network.NewPublicIPAddressesClientWithBaseURI(helpers.ArmEndpointString(), helpers.SubscriptionID())
 	ipClient.Authorizer = autorest.NewBearerAuthorizer(token)
 	ipClient.AddToUserAgent(helpers.UserAgent())
 	return ipClient
@@ -277,7 +278,7 @@ func CreatePublicIP(ctx context.Context, ipName string) (ip network.PublicIPAddr
 			Name:     to.StringPtr(ipName),
 			Location: to.StringPtr(helpers.Location()),
 			PublicIPAddressPropertiesFormat: &network.PublicIPAddressPropertiesFormat{
-				PublicIPAddressVersion:   network.IPv4,
+				//PublicIPAddressVersion:   network.IPv4,
 				PublicIPAllocationMethod: network.Static,
 			},
 		},

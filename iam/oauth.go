@@ -13,7 +13,6 @@ import (
 
 	"github.com/Azure-Samples/azure-sdk-for-go-samples/helpers"
 	"github.com/Azure/go-autorest/autorest/adal"
-	"github.com/Azure/go-autorest/autorest/azure"
 )
 
 const (
@@ -27,9 +26,10 @@ var (
 	armToken    adal.OAuthTokenProvider
 
 	// for service principal
-	subscriptionID string
-	tenantID       string
-	clientSecret   string
+	subscriptionID          string
+	tenantID                string
+	clientSecret            string
+	activeDirectoryEndpoint string
 )
 
 // OAuthGrantType specifies which grant type to use.
@@ -58,12 +58,17 @@ func parseArgs() error {
 	tenantID = os.Getenv("AZ_TENANT_ID")
 	clientID = os.Getenv("AZ_CLIENT_ID")
 	clientSecret = os.Getenv("AZ_CLIENT_SECRET")
+	activeDirectoryEndpoint = os.Getenv("AZ_ACTIVEDIRECTORY_ENDPOINT")
 
 	if !(len(tenantID) > 0) || !(len(clientID) > 0) || !(len(clientSecret) > 0) {
 		return errors.New("tenant id, client id, and client secret must be specified via env var or flags")
 	}
 
-	oauthConfig, err = adal.NewOAuthConfig(azure.PublicCloud.ActiveDirectoryEndpoint, tenantID)
+	if !(len(activeDirectoryEndpoint) > 0) {
+		activeDirectoryEndpoint = "https://login.microsoftonline.com/"
+	}
+
+	oauthConfig, err = adal.NewOAuthConfig(activeDirectoryEndpoint, tenantID)
 
 	return err
 }
@@ -113,7 +118,7 @@ func getServicePrincipalToken() (adal.OAuthTokenProvider, error) {
 		*oauthConfig,
 		clientID,
 		clientSecret,
-		azure.PublicCloud.ResourceManagerEndpoint)
+		helpers.ActiveDirectoryResourceID())
 }
 
 func getDeviceToken() (adal.OAuthTokenProvider, error) {
@@ -123,7 +128,7 @@ func getDeviceToken() (adal.OAuthTokenProvider, error) {
 		sender,
 		*oauthConfig,
 		samplesAppID, // clientID
-		azure.PublicCloud.ResourceManagerEndpoint)
+		helpers.ActiveDirectoryResourceID())
 	if err != nil {
 		log.Fatalf("%s: %v\n", "failed to initiate device auth", err)
 	}

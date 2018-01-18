@@ -14,14 +14,15 @@ import (
 
 	"github.com/Azure-Samples/azure-sdk-for-go-samples/helpers"
 	"github.com/Azure-Samples/azure-sdk-for-go-samples/iam"
-	"github.com/Azure/azure-sdk-for-go/services/resources/mgmt/2017-05-10/resources"
+	"github.com/Azure/azure-sdk-for-go/profiles/latest/resources/mgmt/resources"
+	//"github.com/Azure/azure-sdk-for-go/services/resources/mgmt/2017-05-10/resources"
 	"github.com/Azure/go-autorest/autorest"
 	"github.com/Azure/go-autorest/autorest/to"
 )
 
 func getGroupsClient() resources.GroupsClient {
 	token, _ := iam.GetResourceManagementToken(iam.AuthGrantType())
-	groupsClient := resources.NewGroupsClient(helpers.SubscriptionID())
+	groupsClient := resources.NewGroupsClientWithBaseURI(helpers.ArmEndpointString(), helpers.SubscriptionID())
 	groupsClient.Authorizer = autorest.NewBearerAuthorizer(token)
 	groupsClient.AddToUserAgent(helpers.UserAgent())
 	return groupsClient

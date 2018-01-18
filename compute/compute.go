@@ -15,7 +15,8 @@ import (
 	"github.com/Azure-Samples/azure-sdk-for-go-samples/helpers"
 	"github.com/Azure-Samples/azure-sdk-for-go-samples/iam"
 	"github.com/Azure-Samples/azure-sdk-for-go-samples/network"
-	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2017-03-30/compute"
+	"github.com/Azure/azure-sdk-for-go/profiles/latest/compute/mgmt/compute"
+	//"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2017-03-30/compute"
 	"github.com/Azure/go-autorest/autorest"
 	"github.com/Azure/go-autorest/autorest/to"
 )
@@ -31,7 +32,7 @@ var fakepubkey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC7laRyN4B3YZmVrDEZLZoIuU
 
 func getVMClient() (compute.VirtualMachinesClient, error) {
 	token, _ := iam.GetResourceManagementToken(iam.AuthGrantType())
-	vmClient := compute.NewVirtualMachinesClient(helpers.SubscriptionID())
+	vmClient := compute.NewVirtualMachinesClientWithBaseURI(helpers.ArmEndpointString(), helpers.SubscriptionID())
 	vmClient.Authorizer = autorest.NewBearerAuthorizer(token)
 	vmClient.AddToUserAgent(helpers.UserAgent())
 	return vmClient, nil
@@ -39,7 +40,7 @@ func getVMClient() (compute.VirtualMachinesClient, error) {
 
 // CreateVM creates a new virtual machine with the specified name using the specified NIC.
 // Username, password, and sshPublicKeyPath determine logon credentials.
-func CreateVM(ctx context.Context, vmName, nicName, username, password, sshPublicKeyPath string) (vm compute.VirtualMachine, err error) {
+func CreateVM(ctx context.Context, vmName, nicName, username, password, sshPublicKeyPath, storageAccountName string) (vm compute.VirtualMachine, err error) {
 	nic, _ := network.GetNic(ctx, nicName)
 
 	var sshKeyData string
@@ -53,6 +54,7 @@ func CreateVM(ctx context.Context, vmName, nicName, username, password, sshPubli
 		sshKeyData = fakepubkey
 	}
 
+	vhdURItemplate := "https://%s.blob." + helpers.StorageEndpointSuffix() + "/vhds/%s.vhd"
 	vmClient, _ := getVMClient()
 	future, err := vmClient.CreateOrUpdate(
 		ctx,
@@ -62,7 +64,7 @@ func CreateVM(ctx context.Context, vmName, nicName, username, password, sshPubli
 			Location: to.StringPtr(helpers.Location()),
 			VirtualMachineProperties: &compute.VirtualMachineProperties{
 				HardwareProfile: &compute.HardwareProfile{
-					VMSize: compute.StandardDS1V2,
+					VMSize: compute.StandardA1,
 				},
 				StorageProfile: &compute.StorageProfile{
 					ImageReference: &compute.ImageReference{
@@ -70,6 +72,13 @@ func CreateVM(ctx context.Context, vmName, nicName, username, password, sshPubli
 						Offer:     to.StringPtr(offer),
 						Sku:       to.StringPtr(sku),
 						Version:   to.StringPtr("latest"),
+					},
+					OsDisk: &compute.OSDisk{
+						Name: to.StringPtr("osDisk"),
+						Vhd: &compute.VirtualHardDisk{
+							URI: to.StringPtr(fmt.Sprintf(vhdURItemplate, storageAccountName, vmName)),
+						},
+						CreateOption: compute.DiskCreateOptionTypesFromImage,
 					},
 				},
 				OsProfile: &compute.OSProfile{

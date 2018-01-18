@@ -16,11 +16,14 @@ import (
 )
 
 var (
-	resourceGroupName string
-	location          string
-	subscriptionID    string
-	keepResources     bool
-	deviceFlow        bool
+	resourceGroupName         string
+	location                  string
+	subscriptionID            string
+	armEndpointString         string
+	activeDirectoryResourceID string
+	storageEndpointSuffix     string
+	keepResources             bool
+	deviceFlow                bool
 
 	allLocations = []string{
 		"eastasia",
@@ -77,6 +80,8 @@ func ParseArgs() error {
 	if os.Getenv("AZ_SAMPLES_KEEP_RESOURCES") == "1" {
 		keepResources = true
 	}
+	armEndpointString = os.Getenv("AZ_ARM_ENDPOINT")
+	storageEndpointSuffix = os.Getenv("AZ_STORAGE_SUFFIX")
 
 	// flags override envvars
 	flag.StringVar(&resourceGroupName, "groupName", resourceGroupName, "Specify name of resource group for sample resources.")
@@ -92,6 +97,20 @@ func ParseArgs() error {
 	if !(len(location) > 0) {
 		location = "westus2" // lots of space, most new features
 	}
+
+	if !(len(armEndpointString) > 0) {
+		armEndpointString = "https://management.azure.com/"
+	}
+
+	if !(len(storageEndpointSuffix) > 0) {
+		storageEndpointSuffix = "core.windows.net"
+	}
+
+	activeDirectoryResourceID, err = GetAadResourceID(armEndpointString)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -157,6 +176,21 @@ func GroupPrefix() string {
 // DeviceFlow returns if device flow has been set as auth grant type
 func DeviceFlow() bool {
 	return deviceFlow
+}
+
+// ArmEndpointString specifies resource manager URI
+func ArmEndpointString() string {
+	return armEndpointString
+}
+
+// ActiveDirectoryResourceID specifies active directory resource ID
+func ActiveDirectoryResourceID() string {
+	return activeDirectoryResourceID
+}
+
+// StorageEndpointSuffix specifies storage endpoint suffix
+func StorageEndpointSuffix() string {
+	return storageEndpointSuffix
 }
 
 // end getters

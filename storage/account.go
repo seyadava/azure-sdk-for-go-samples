@@ -12,6 +12,7 @@ import (
 
 	"github.com/Azure-Samples/azure-sdk-for-go-samples/helpers"
 	"github.com/Azure-Samples/azure-sdk-for-go-samples/iam"
+	//	"github.com/Azure/azure-sdk-for-go/profiles/2017-03-09/storage/mgmt/storage"
 	"github.com/Azure/azure-sdk-for-go/services/storage/mgmt/2017-06-01/storage"
 
 	"github.com/Azure/go-autorest/autorest"
@@ -20,7 +21,7 @@ import (
 
 func getStorageAccountsClient() storage.AccountsClient {
 	token, _ := iam.GetResourceManagementToken(iam.AuthGrantType())
-	storageAccountsClient := storage.NewAccountsClient(helpers.SubscriptionID())
+	storageAccountsClient := storage.NewAccountsClientWithBaseURI(helpers.ArmEndpointString(), helpers.SubscriptionID())
 	storageAccountsClient.Authorizer = autorest.NewBearerAuthorizer(token)
 	storageAccountsClient.AddToUserAgent(helpers.UserAgent())
 	return storageAccountsClient

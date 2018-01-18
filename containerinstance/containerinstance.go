@@ -22,8 +22,7 @@ func getContainerGroupsClient() (containerinstance.ContainerGroupsClient, error)
 	if err != nil {
 		return containerinstance.ContainerGroupsClient{}, fmt.Errorf("cannot get token: %v", err)
 	}
-
-	containerGroupsClient := containerinstance.NewContainerGroupsClient(helpers.SubscriptionID())
+	containerGroupsClient := containerinstance.NewContainerGroupsClientWithBaseURI(helpers.ArmEndpointString(), helpers.SubscriptionID())
 	containerGroupsClient.Authorizer = autorest.NewBearerAuthorizer(token)
 	containerGroupsClient.AddToUserAgent(helpers.UserAgent())
 	return containerGroupsClient, nil
