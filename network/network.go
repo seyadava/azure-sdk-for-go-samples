@@ -12,8 +12,7 @@ import (
 
 	"github.com/Azure-Samples/azure-sdk-for-go-samples/helpers"
 	"github.com/Azure-Samples/azure-sdk-for-go-samples/iam"
-	"github.com/Azure/azure-sdk-for-go/profiles/latest/network/mgmt/network"
-	//"github.com/Azure/azure-sdk-for-go/services/network/mgmt/2017-09-01/network"
+	"github.com/Azure/azure-sdk-for-go/profiles/2017-03-09/network/mgmt/network"
 	"github.com/Azure/go-autorest/autorest"
 	"github.com/Azure/go-autorest/autorest/to"
 )
@@ -122,26 +121,26 @@ func CreateNetworkSecurityGroup(ctx context.Context, nsgName string) (nsg networ
 					{
 						Name: to.StringPtr("allow_ssh"),
 						SecurityRulePropertiesFormat: &network.SecurityRulePropertiesFormat{
-							Protocol:                 network.SecurityRuleProtocolTCP,
+							Protocol:                 network.TCP,
 							SourceAddressPrefix:      to.StringPtr("0.0.0.0/0"),
 							SourcePortRange:          to.StringPtr("1-65535"),
 							DestinationAddressPrefix: to.StringPtr("0.0.0.0/0"),
 							DestinationPortRange:     to.StringPtr("22"),
-							Access:                   network.SecurityRuleAccessAllow,
-							Direction:                network.SecurityRuleDirectionInbound,
+							Access:                   network.Allow,
+							Direction:                network.Inbound,
 							Priority:                 to.Int32Ptr(100),
 						},
 					},
 					{
 						Name: to.StringPtr("allow_https"),
 						SecurityRulePropertiesFormat: &network.SecurityRulePropertiesFormat{
-							Protocol:                 network.SecurityRuleProtocolTCP,
+							Protocol:                 network.TCP,
 							SourceAddressPrefix:      to.StringPtr("0.0.0.0/0"),
 							SourcePortRange:          to.StringPtr("1-65535"),
 							DestinationAddressPrefix: to.StringPtr("0.0.0.0/0"),
 							DestinationPortRange:     to.StringPtr("443"),
-							Access:                   network.SecurityRuleAccessAllow,
-							Direction:                network.SecurityRuleDirectionInbound,
+							Access:                   network.Allow,
+							Direction:                network.Inbound,
 							Priority:                 to.Int32Ptr(200),
 						},
 					},

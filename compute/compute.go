@@ -15,8 +15,7 @@ import (
 	"github.com/Azure-Samples/azure-sdk-for-go-samples/helpers"
 	"github.com/Azure-Samples/azure-sdk-for-go-samples/iam"
 	"github.com/Azure-Samples/azure-sdk-for-go-samples/network"
-	"github.com/Azure/azure-sdk-for-go/profiles/latest/compute/mgmt/compute"
-	//"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2017-03-30/compute"
+	"github.com/Azure/azure-sdk-for-go/profiles/2017-03-09/compute/mgmt/compute"
 	"github.com/Azure/go-autorest/autorest"
 	"github.com/Azure/go-autorest/autorest/to"
 )
@@ -24,7 +23,7 @@ import (
 const (
 	publisher = "Canonical"
 	offer     = "UbuntuServer"
-	sku       = "16.04.0-LTS"
+	sku       = "16.04-LTS"
 )
 
 // fakepubkey is used if a key isn't available at the specified path in CreateVM(...)
@@ -78,7 +77,7 @@ func CreateVM(ctx context.Context, vmName, nicName, username, password, sshPubli
 						Vhd: &compute.VirtualHardDisk{
 							URI: to.StringPtr(fmt.Sprintf(vhdURItemplate, storageAccountName, vmName)),
 						},
-						CreateOption: compute.DiskCreateOptionTypesFromImage,
+						CreateOption: compute.FromImage,
 					},
 				},
 				OsProfile: &compute.OSProfile{

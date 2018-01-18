@@ -12,8 +12,7 @@ import (
 
 	"github.com/Azure-Samples/azure-sdk-for-go-samples/helpers"
 	"github.com/Azure-Samples/azure-sdk-for-go-samples/iam"
-	//	"github.com/Azure/azure-sdk-for-go/profiles/2017-03-09/storage/mgmt/storage"
-	"github.com/Azure/azure-sdk-for-go/services/storage/mgmt/2017-06-01/storage"
+	"github.com/Azure/azure-sdk-for-go/profiles/2017-03-09/storage/mgmt/storage"
 
 	"github.com/Azure/go-autorest/autorest"
 	"github.com/Azure/go-autorest/autorest/to"
