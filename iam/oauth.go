@@ -113,7 +113,7 @@ func getServicePrincipalToken() (adal.OAuthTokenProvider, error) {
 		*oauthConfig,
 		clientID,
 		clientSecret,
-		azure.PublicCloud.ResourceManagerEndpoint)
+		azure.AzureStackCloud.ActiveDirectoryResourceId)
 }
 
 func getDeviceToken() (adal.OAuthTokenProvider, error) {
